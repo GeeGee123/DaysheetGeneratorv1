@@ -20,7 +20,7 @@ namespace FrontEnd
            
             string layout = @"C:\DaySheetGenerator\Layout_Template.xlsx"; // Defining the path to the template the daysheet will be written into
             DateTime dateFile; // DateTime variable that will be used to assign date to file name
-
+            ColumnStringsManager strManager = new ColumnStringsManager();
 
             //Opens Lighting-Bolt spreadsheet to extract sheet date for use in final file name
             /*****************************************************************************************************************************************/
@@ -50,21 +50,11 @@ namespace FrontEnd
             /****************************************************************************************************************************************/
 
 
-            // Dictionaries and a List that manage the conditional logic of the program. Extracted from one XLSX file at C:\DaysheetConditionalFile\DaysheetConditions.xlsx
-            /****************************************************************************************************************************************/
-            GeneralCSV AdditionalNotes = new GeneralCSV(@"C:\DaySheetGenerator\DaysheetConditions.xlsx", 0);
-            GeneralCSV assignToNotes = new GeneralCSV(@"C:\DaySheetGenerator\DaysheetConditions.xlsx", 1);
-            GeneralCSV wording = new GeneralCSV(@"C:\DaySheetGenerator\DaysheetConditions.xlsx", 2);
-            GeneralCSV notesByName = new GeneralCSV(@"C:\DaySheetGenerator\DaysheetConditions.xlsx", 3);
-            ResidentLoader resLoader = new ResidentLoader(@"C:\DaySheetGenerator\DaysheetConditions.xlsx", 4);
-            GeneralCSV wordsToBold = new GeneralCSV(@"C:\DaySheetGenerator\DaysheetConditions.xlsx", 5);
-            List<string> resList = resLoader.returnList();
-            /****************************************************************************************************************************************/
-
+            
 
             for (int reportNum = 0; reportNum < filePaths.Count; reportNum++)
             {
-                List<string> jobs = new List<string>(); // Jobs list used to manage job label sections in the daysheet pdf
+                
                 List<string> arrAssign = new List<string>(); // arrAssign list used to contain multiple assignments due to multiple lightning-bolt rows being applied to a single staff member
                 List<string> arrNotes = new List<string>(); // arrNotes used to contain multiple notes for a single staff member
                 List<SheetLine> sheetList = new List<SheetLine>(); // stores object representaion of row data from lightning-bolt XLS
@@ -116,65 +106,32 @@ namespace FrontEnd
 
 
                             // Manages post data from lightning-bolt XLS
-                            /**************************************************************************************************************************************/
                             if (column == 0)
                             {
-                                sheetLine.setPost(sheet.GetRow(row).GetCell(column).ToString()); // assigns the 0th column data to sheetline->post
+                                string postCallInput = sheet.GetRow(row).GetCell(column).ToString();
+                                string postCallOutput = strManager.PostCall(postCallInput);
+                                sheetLine.setPost(postCallOutput); 
                             }
-                            /**************************************************************************************************************************************/
-
 
                             // Manages call data from lightning-bolt XLS and applies changes to call data strings
-                            /**************************************************************************************************************************************/
                             if (column == 1)
                             {
-                                sheetLine.setOnCall(sheet.GetRow(row).GetCell(column).ToString()); // assigns the 1st column data to sheetline->OnCall
-
-                                if (sheet.GetRow(row).GetCell(column).ToString().Trim(' ') == "FC")
-                                {
-                                    arrAssign.Add("PreCall");
-                                }
+                                string onCallInput = sheet.GetRow(row).GetCell(column).ToString();
+                                string onCallOutput = strManager.OnCall(onCallInput, arrAssign);
+                                arrAssign = strManager.getInternalArray("assignments");
+                                sheetLine.setOnCall(onCallOutput); // assigns the 1st column data to sheetline->OnCall
                             }
-                            /**************************************************************************************************************************************/
-
-
+                             
                             // Manages staff name data from lightning-bolt XLS and applies changes to staff data strings
-                            /**************************************************************************************************************************************/
                             if (column == 2)
                             {
-                                string name = sheet.GetRow(row).GetCell(column).ToString();
-                                name = name.Replace(",", "");
-
-                                string[] nameArr = name.Split(' ');
-                                string finalName = "";
-
-                                for (int i = 0; i < nameArr.Length; i++)
-                                {
-                                    if (nameArr[i].Length != 0)
-                                    {
-                                        if (IsAllUpper(nameArr[i]))
-                                        {
-                                            name = nameArr[i].ToLower();
-                                            name = (char.ToUpper(name[0])).ToString() + name.Substring(1);
-                                            finalName = finalName + name + " ";
-
-                                        }
-                                    }
-                                }
-                                finalName = finalName.Trim();
-
-                                if (notesByName.DictContains(finalName))
-                                {
-                                    arrNotes.Add(notesByName.getValue(finalName));
-                                }
-
-                                sheetLine.setStaff(sheet.GetRow(row).GetCell(column).ToString());
+                                string staffNameInput = sheet.GetRow(row).GetCell(column).ToString();
+                                string staffNameOutput = strManager.StaffName(staffNameInput, arrNotes);
+                                arrNotes = strManager.getInternalArray("notes");
+                                sheetLine.setStaff(staffNameOutput);
                             }
-                            /**************************************************************************************************************************************/
-
-
+                            
                             // Manages staff assignment data from lightning-bolt XLS and applies changes to assignment data strings
-                            /**************************************************************************************************************************************/
                             if (column == 3)
                             {
                                 string assign = "";
@@ -605,16 +562,6 @@ namespace FrontEnd
 
 
 
-        public static bool IsAllUpper(string input)
-        {
-            for (int i = 0; i < input.Length; i++)
-            {
-                if (!Char.IsUpper(input[i]) && input[i] != '-')
-                    return false;
-            }
-
-            return true;
-        }
 
 
 
