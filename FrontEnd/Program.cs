@@ -104,7 +104,6 @@ namespace FrontEnd
                         for (int column = 0; column < 6; column++) // Loops the the 5 columns of relevent data in the spreadsheet
                         {
 
-
                             // Manages post data from lightning-bolt XLS
                             if (column == 0)
                             {
@@ -134,108 +133,25 @@ namespace FrontEnd
                             // Manages staff assignment data from lightning-bolt XLS and applies changes to assignment data strings
                             if (column == 3)
                             {
-                                string assign = "";
-                                string toNote;
-                                for (int i = 0; i < arrAssign.Count; i++)
-                                {
-                                    if (wording.DictContains(arrAssign[i]))
-                                    {
-                                        toNote = wording.getValue(arrAssign[i]);
-
-                                        if (assignToNotes.DictContains(toNote))
-                                        {
-                                            arrNotes.Add(assignToNotes.getValue(toNote));
-                                        }
-                                        else
-                                        {
-                                            assign = assign + toNote + " ";
-                                        }
-                                    }
-                                    else if (assignToNotes.DictContains(arrAssign[i]))
-                                    {
-                                        arrNotes.Add(assignToNotes.getValue(arrAssign[i]));
-                                    }
-                                    else
-                                    {
-                                        assign = assign + arrAssign[i] + " ";
-                                    }
-
-                                }
-
-                                if (wording.DictContains(sheet.GetRow(row).GetCell(column).ToString()))
-                                {
-                                    toNote = wording.getValue(sheet.GetRow(row).GetCell(column).ToString());
-
-
-
-                                    if (assignToNotes.DictContains(toNote))
-                                    {
-                                        string str = assignToNotes.getValue(toNote);
-                                        arrNotes.Add(str);
-
-                                    }
-
-                                    else if (AdditionalNotes.DictContains(sheet.GetRow(row).GetCell(column).ToString()))
-                                    {
-                                        string str = AdditionalNotes.getValue(sheet.GetRow(row).GetCell(column).ToString());
-
-                                        arrNotes.Add(str);
-                                        str = wording.getValue(sheet.GetRow(row).GetCell(column).ToString());
-
-                                        assign = assign + str + " ";
-
-                                    }
-
-                                    else
-                                    {
-                                        assign = assign + toNote + " ";
-                                    }
-                                }
-
-                                else if (assignToNotes.DictContains(sheet.GetRow(row).GetCell(column).ToString()))
-                                {
-                                    toNote = assignToNotes.getValue(sheet.GetRow(row).GetCell(column).ToString());
-                                    arrNotes.Add(toNote);
-                                }
-
-
-
-
-                                else
-                                {
-                                    assign = assign + sheet.GetRow(row).GetCell(column).ToString() + " ";
-                                }
-
-
-                                sheetLine.setAssignment(assign);
+                                string assignmentInput = sheet.GetRow(row).GetCell(column).ToString();
+                                string assignmentOutput = strManager.Assignment(assignmentInput, arrAssign);
+                                arrNotes = strManager.getInternalArray("notes");
+                                sheetLine.setAssignment(assignmentOutput);
                             }
-                            /**************************************************************************************************************************************/
-
 
                             // Manages staff notes data from lightning-bolt XLS and applies changes to notes data strings
-                            /**************************************************************************************************************************************/
                             if (column == 4)
                             {
-                                string attachNote = "";
-                                if (arrNotes.Count > 0)
-                                {
-                                    for (int i = 0; i < arrNotes.Count; i++)
-                                    {
-                                        attachNote = attachNote + arrNotes[i] + " ";
-                                    }
-                                }
-                                attachNote = attachNote + sheet.GetRow(row).GetCell(column).ToString();
-                                sheetLine.setNotes(attachNote);
+                                string notesInput = sheet.GetRow(row).GetCell(column).ToString();
+                                string notesOutput = strManager.Notes(notesInput);
+                                sheetLine.setNotes(notesOutput);
                             }
-                            /**************************************************************************************************************************************/
 
                             // Stores staff type (Staff, Fellow, AA, Resident etc...) for later use in formatting logic
-                            /**************************************************************************************************************************************/
                             if (column == 5)
                             {
                                 sheetLine.setPType(sheet.GetRow(row).GetCell(column).ToString());
                             }
-                            /**************************************************************************************************************************************/
 
                         }
 
@@ -552,22 +468,7 @@ namespace FrontEnd
                 {
                     xssfwb.Write(fs);
                 }
-
-
-
-
             }
-
         }
-
-
-
-
-
-
-
-
-
     }
-
 }

@@ -72,14 +72,89 @@ namespace FrontEnd
             return staffNameOutput;
         }
 
-        public string Assignment(string assignmentInput)
+        public string Assignment(string assignmentInput, List<string> arrAssign)
         {
+            string toNote;
+            string assignmentOutput = "";
+            internalAssignmentArray = arrAssign;
+
+            for (int i = 0; i < internalAssignmentArray.Count; i++)
+            {
+                if (wording.DictContains(internalAssignmentArray[i]))
+                {
+                    toNote = wording.getValue(internalAssignmentArray[i]);
+
+                    if (assignToNotes.DictContains(toNote))
+                    {
+                        internalNotesArray.Add(assignToNotes.getValue(toNote));
+                    }
+                    else
+                    {
+                        assignmentOutput = assignmentOutput + toNote + " ";
+                    }
+                }
+                else if (assignToNotes.DictContains(internalAssignmentArray[i]))
+                {
+                    internalNotesArray.Add(assignToNotes.getValue(internalAssignmentArray[i]));
+                }
+                else
+                {
+                    assignmentOutput = assignmentOutput + internalAssignmentArray[i] + " ";
+                }
+
+            }
+
+            if (wording.DictContains(assignmentInput))
+            {
+                toNote = wording.getValue(assignmentInput);
+
+                if (assignToNotes.DictContains(toNote))
+                {
+                    string str = assignToNotes.getValue(toNote);
+                    internalNotesArray.Add(str);
+                }
+
+                else if (AdditionalNotes.DictContains(assignmentInput))
+                {
+                    string str = AdditionalNotes.getValue(assignmentInput);
+                    internalNotesArray.Add(str);
+                    str = wording.getValue(assignmentInput);
+                    assignmentOutput = assignmentOutput + str + " ";
+                }
+
+                else
+                {
+                    assignmentOutput = assignmentOutput + toNote + " ";
+                }
+            }
+
+            else if (assignToNotes.DictContains(assignmentInput))
+            {
+                toNote = assignToNotes.getValue(assignmentInput);
+                internalNotesArray.Add(toNote);
+            }
+
+            else
+            {
+                assignmentOutput = assignmentOutput + assignmentInput + " ";
+            }
+
+            return assignmentOutput;
 
         }
 
         public string Notes(string notesInput)
         {
-
+            string notesOutput = "";
+            if (internalAssignmentArray.Count > 0)
+            {
+                for (int i = 0; i < internalAssignmentArray.Count; i++)
+                {
+                    notesOutput = notesOutput + internalAssignmentArray[i] + " ";
+                }
+            }
+            notesOutput = notesOutput + notesInput;
+            return notesOutput;
         }
 
         public List<string> getInternalArray(string arrayName)
