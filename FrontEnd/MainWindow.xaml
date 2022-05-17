@@ -16,7 +16,7 @@
                 </GridView>
             </ListView.View>
         </ListView>
-        <Label Content="Files To Be Converted" HorizontalAlignment="Left" Margin="10,4,0,0" VerticalAlignment="Top" Width="175" FontSize="15"/>
+        <Label Content="Files To Be Converted (maximum 5)" HorizontalAlignment="Left" Margin="10,4,0,0" VerticalAlignment="Top" Width="272" FontSize="15"/>
         <Button Content="Clear Files" HorizontalAlignment="Left" Margin="128,234,0,0" VerticalAlignment="Top" Width="113" Height="21" RenderTransformOrigin="-0.106,2.641" Click="Button_Click_2"/>
 
     </Grid>

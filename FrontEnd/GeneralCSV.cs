@@ -12,7 +12,7 @@ namespace FrontEnd
     {
         private Dictionary<string, string> CsvToDict;
 
-        public GeneralCSV(string filePath)
+        public GeneralCSV(string filePath, int sheetIndex)
         {
 
             CsvToDict = new Dictionary<string, string>();
@@ -24,8 +24,9 @@ namespace FrontEnd
                 xssfwb = new XSSFWorkbook(file);
             }
 
-            ISheet sheet = xssfwb.GetSheet("Conditions");
+            ISheet sheet = xssfwb.GetSheetAt(sheetIndex);
 
+            int val = sheet.PhysicalNumberOfRows;
             for (int row = 0; row < sheet.PhysicalNumberOfRows; row++)
             {
                 string key = sheet.GetRow(row).GetCell(0).ToString();

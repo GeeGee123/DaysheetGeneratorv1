@@ -36,8 +36,16 @@ namespace FrontEnd
         {
             if (filePathsList.Count() <= 0)
             {
-                const string message = "No files selected";
-                const string caption = "No files selected to convert!";
+                const string caption = "Error";
+                const string message = "No files selected to convert!";
+
+                MessageBox.Show(message, caption);
+            }
+
+            else if (filePathsList.Count() > 5)
+            {
+                const string caption = "Error";
+                const string message = "More than 5 files selected!";
 
                 MessageBox.Show(message, caption);
             }
@@ -53,12 +61,9 @@ namespace FrontEnd
                     loc = dialog.FileName;
 
 
-                    int index = 0;
-                    foreach (string s in filePathsList)
-                    {
-                        new Program(s, index, loc);
-                        index += 1;
-                    }
+                   
+                    new Program(filePathsList, loc);
+                 
 
                     MessageBox.Show("Process Complete", "Process Complete");
 
@@ -95,12 +100,7 @@ namespace FrontEnd
                     filePathsList.Add(filePaths);
                 }
 
-                string testString = "";
-                foreach (string paths in filePathsList)
-                {
-                    testString += paths + "\n";
-                }
-
+               
                 lvDataBinding.ItemsSource = filePathsList;
                 
             }
