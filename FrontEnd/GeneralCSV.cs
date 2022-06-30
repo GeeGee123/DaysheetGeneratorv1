@@ -32,6 +32,11 @@ namespace FrontEnd
                 string key = sheet.GetRow(row).GetCell(0).ToString();
                 string value;
 
+                if (key == "")
+                {
+                    break;
+                }
+
                 if (sheet.GetRow(row).GetCell(1) != null)
                 {
                     value = sheet.GetRow(row).GetCell(1).ToString();

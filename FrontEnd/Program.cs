@@ -21,6 +21,15 @@ namespace FrontEnd
             string layout = @"C:\DaySheetGenerator\Layout_Template.xlsx"; // Defining the path to the template the daysheet will be written into
             DateTime dateFile; // DateTime variable that will be used to assign date to file name
             ColumnStringsManager strManager = new ColumnStringsManager();
+            GeneralCSV wordsToBold = strManager.ReturnWordsToBold();
+            List<string> resList = strManager.ReturnResList();
+            GeneralCSV fellNotes = strManager.ReturnFellNote();
+           
+
+            string postThirdCall = "";
+            string postFourthCall = "";
+            int result;
+
 
             //Opens Lighting-Bolt spreadsheet to extract sheet date for use in final file name
             /*****************************************************************************************************************************************/
@@ -86,7 +95,7 @@ namespace FrontEnd
                 for (int row = 1; row < sheet.PhysicalNumberOfRows - 1; row++)
                 {
 
-                    sheetLine = new SheetLine(); // Creates new sheetLine object for eacg row in the spreadsheet
+                    sheetLine = new SheetLine(); // Creates new sheetLine object for each row in the spreadsheet
 
 
                     /**************************************************************************************************************************************/
@@ -109,6 +118,8 @@ namespace FrontEnd
                             {
                                 string postCallInput = sheet.GetRow(row).GetCell(column).ToString();
                                 string postCallOutput = strManager.PostCall(postCallInput);
+
+
                                 sheetLine.setPost(postCallOutput); 
                             }
 
@@ -116,6 +127,7 @@ namespace FrontEnd
                             if (column == 1)
                             {
                                 string onCallInput = sheet.GetRow(row).GetCell(column).ToString();
+
                                 string onCallOutput = strManager.OnCall(onCallInput, arrAssign);
                                 arrAssign = strManager.getInternalArray("assignments");
                                 sheetLine.setOnCall(onCallOutput); // assigns the 1st column data to sheetline->OnCall
@@ -161,6 +173,39 @@ namespace FrontEnd
                     }
 
 
+                }
+
+                for (int i = 0; i < sheetList.Count; i++)
+                {
+
+                    if (postThirdCall == sheetList[i].getStaff().Trim())
+                    {
+                        sheetList[i].setPost("Post 3rd Call");
+                        postThirdCall = "";
+                    }
+                    if(postFourthCall == sheetList[i].getStaff().Trim())
+                    {
+                        sheetList[i].setPost("Post 4th Call");
+                        postFourthCall = "";
+                    }
+                    
+                }
+
+                for (int i = 0; i < sheetList.Count; i++)
+                {
+
+                    if (Int32.TryParse(sheetList[i].getOnCall().Trim(), out result))
+                    {
+
+                        if (result == 3)
+                        {
+                            postThirdCall = sheetList[i].getStaff();
+                        }
+                        if (result == 4)
+                        {
+                            postFourthCall = sheetList[i].getStaff();
+                        }
+                    }
                 }
 
                 hssfwb.Close(); // Closes lightning-bolt XLS file 
@@ -332,9 +377,18 @@ namespace FrontEnd
 
                         string assignTrimmer = sheetList[i].getAssignment().Trim(' ', '\n');
                         string noteTrimmer = sheetList[i].getNotes().Trim(' ', '\n');
+                        noteTrimmer = noteTrimmer.Trim('/');
 
                         string[] stringParse = sheetList[i].getStaff().Split(' ');
+                        
                         string finalName = stringParse[0].Trim(',') + ", " + stringParse[1].Substring(0, 1);
+                        if (fellNotes.DictContains(finalName))
+                        {
+                            string fellNote = "";
+                            fellNote = fellNotes.getValue(finalName);
+                            noteTrimmer = fellNote + "/" + noteTrimmer;
+                            noteTrimmer = noteTrimmer.Trim('/');
+                        }
 
                         postCell.SetCellValue(sheetList[i].getPost());
                         onCallCell.SetCellValue(sheetList[i].getOnCall());
@@ -390,7 +444,7 @@ namespace FrontEnd
 
                 }
 
-                int resRow = 105;
+                int resRow = 110;
 
                 for (int i = 0; i < resList.Count(); i++)
                 {

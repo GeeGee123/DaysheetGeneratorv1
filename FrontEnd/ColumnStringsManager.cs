@@ -44,6 +44,7 @@ namespace FrontEnd
         {
             internalNotesArray = notesArray;
             string staffNameProcess = staffNameInput;
+            string fellowNote = "";
             staffNameProcess = staffNameProcess.Replace(",", "");
 
             string[] staffNameOutputmeArray = staffNameProcess.Split(' ');
@@ -57,16 +58,22 @@ namespace FrontEnd
                     {
                         staffNameProcess = staffNameOutputmeArray[i].ToLower();
                         staffNameProcess = (char.ToUpper(staffNameProcess[0])).ToString() + staffNameProcess.Substring(1);
+                        fellowNote = staffNameProcess;
                         staffNameOutput = staffNameOutput + staffNameProcess + " ";
 
+                    }
+                    else
+                    {
+                        staffNameOutput = staffNameOutput + staffNameOutputmeArray[i] + " ";
                     }
                 }
             }
             staffNameOutput = staffNameOutput.Trim();
+            
 
-            if (notesByName.DictContains(staffNameOutput))
+            if (notesByName.DictContains(fellowNote))
             {
-                internalNotesArray.Add(notesByName.getValue(staffNameOutput));
+                internalNotesArray.Add(notesByName.getValue(fellowNote));
             }
 
             return staffNameOutput;
@@ -150,10 +157,13 @@ namespace FrontEnd
             {
                 for (int i = 0; i < internalAssignmentArray.Count; i++)
                 {
-                    notesOutput = notesOutput + internalAssignmentArray[i] + " ";
+                    notesOutput = notesOutput + internalAssignmentArray[i] + '/';
                 }
             }
             notesOutput = notesOutput + notesInput;
+            notesOutput = notesOutput.Trim(' ');
+            notesOutput = notesOutput.Trim(' ');
+            notesOutput = notesOutput.Trim('/');
             return notesOutput;
         }
 
@@ -180,6 +190,22 @@ namespace FrontEnd
 
             return true;
         }
+
+        public GeneralCSV ReturnWordsToBold()
+        {
+            return wordsToBold;
+        }
+
+        public List<string> ReturnResList()
+        {
+            return resLoader.returnList();
+        }
+
+        public GeneralCSV ReturnFellNote()
+        {
+            return notesByName;
+        }
+
 
     }
 }
